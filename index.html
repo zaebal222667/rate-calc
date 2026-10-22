@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Калькулятор курса HTX + площадка</title>
+<style>
+:root{--bg:#0B0F14;--card:#131923;--tx:#E6EBF2;--mut:#8593A6;--bd:#1E2733;--bd2:#2E3B4E;--in:#202A38;--ac:#65A9FF;--acbg:rgba(101,169,255,.11);--ring:rgba(101,169,255,.25);--ok:#4ADE80;--okbg:rgba(34,120,70,.28);--bad:#FF8A7A;--badbg:rgba(190,60,48,.26);color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.4;-webkit-font-smoothing:antialiased}
+.wrap{max-width:860px;margin:0 auto;padding:22px 16px 48px}
+h1{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:6px 0 20px}
+h2{font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+label{display:block;font-size:12px;font-weight:500;color:var(--mut);margin-bottom:6px}
+input{width:100%;box-sizing:border-box;font:inherit;font-size:17px;font-weight:600;color:var(--tx);padding:10px 12px;border:1px solid var(--bd2);border-radius:10px;background:var(--in);outline:none;transition:border-color .15s,box-shadow .15s}
+input:hover{border-color:#3b4b62}
+input:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--ring)}
+input::placeholder{color:var(--mut);font-weight:400}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:10px 6px;text-align:right;border-bottom:1px solid var(--bd);white-space:nowrap}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:rgba(101,169,255,.09)}
+.tbl th:first-child,.tbl td:first-child{text-align:left;padding-left:8px;font-weight:600}
+.tbl th:last-child,.tbl td:last-child{padding-right:8px}
+.tbl tbody tr:hover td:first-child{border-radius:8px 0 0 8px}
+.tbl tbody tr:hover td:last-child{border-radius:0 8px 8px 0}
+.tbl th{font-size:10.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);vertical-align:bottom;white-space:normal}
+.mx th input{width:58px;text-align:center;font-size:13px;padding:6px 2px;border-radius:8px}
+.mx th input.sel{border-color:var(--ac);color:var(--ac);background:var(--acbg)}
+.mx td.sel{background:var(--acbg)}
+.scroll{overflow-x:auto;margin:0 -6px;padding:0 6px}
+.p{display:inline-block;font-weight:500;border-radius:5px;padding:1px 6px;font-size:12.5px}
+.pos{color:var(--ok);background:var(--okbg)}.neg{color:var(--bad);background:var(--badbg)}
+.note{font-size:13px;color:var(--mut);line-height:1.6}
+.btn{font:inherit;font-size:13px;font-weight:600;color:#06121f;background:var(--ac);border:0;border-radius:8px;padding:8px 12px;cursor:pointer;margin-left:8px}
+.btn:hover{filter:brightness(1.1)}
+details.card{padding:0}
+summary{cursor:pointer;list-style:none;padding:16px 18px;font-size:14px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--mut);border-bottom:2px solid var(--mut);transform:rotate(45deg);transition:transform .2s;margin-right:4px}
+details[open] summary::after{transform:rotate(225deg)}
+.pad{padding:0 18px 18px}
+.tar{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 16px}
+@media (max-width:520px){.wrap{padding:16px 12px 40px}.card{padding:14px}summary{padding:14px}.pad{padding:0 14px 14px}.tar{gap:8px}input{font-size:16px}.mx th input{font-size:13px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Калькулятор прибыли: HTX + площадка</h1>
+
+<div class="card">
+<div class="grid">
+<div><label for="P">Курс площадки «Покупка», ₽</label><input id="P" type="number" step="0.0001" inputmode="decimal" value="90.4176"></div>
+<div><label for="price">Цена клиенту на HTX, ₽</label><input id="price" type="number" step="0.01" inputmode="decimal" value="99"></div>
+<div><label for="target">Цель по прибыли с чека, USDT</label><input id="target" type="number" step="0.05" inputmode="decimal" value="3"></div>
+</div>
+</div>
+
+<div class="card">
+<h2>Один чек: прибыль по диапазонам суммы</h2>
+<div class="scroll"><table class="tbl" id="t"><thead><tr>
+<th>Чек, ₽</th><th>Чистая стоимость, USDT</th><th>Клиент отдаёт, USDT</th><th>Прибыль, USDT</th><th>Цена для цели</th>
+</tr></thead><tbody></tbody></table></div>
+</div>
+
+<div class="card">
+<h2>Прибыль (USDT) с одного чека при разных ценах HTX</h2>
+<div class="scroll"><table class="tbl mx" id="m"><thead><tr>
+<th>Чек, ₽ / цена HTX →</th>
+<th><input id="m0" type="number" step="0.5" inputmode="decimal" value="93"></th>
+<th><input id="m1" type="number" step="0.5" inputmode="decimal" value="94"></th>
+<th><input id="m2" type="number" step="0.5" inputmode="decimal" value="95"></th>
+<th><input id="m3" type="number" step="0.5" inputmode="decimal" value="96"></th>
+<th><input id="m4" type="number" step="0.5" inputmode="decimal" value="97"></th>
+<th><input id="m5" type="number" step="0.5" inputmode="decimal" value="98"></th>
+<th><input id="m6" type="number" step="0.5" inputmode="decimal" value="99"></th>
+</tr></thead><tbody></tbody></table></div>
+</div>
+
+<div class="card">
+<h2>Сумма клиента: варианты дробления</h2>
+<div class="grid">
+<div><label for="total">Сумма, ₽</label><input id="total" type="number" step="100" inputmode="numeric" value="30000"></div>
+<div><label for="own">Свои чеки через пробел</label><input id="own" type="text" inputmode="numeric" placeholder="3000 3000 5000"></div>
+</div>
+<div class="scroll" style="margin-top:10px"><table class="tbl" id="s"><thead><tr>
+<th>Размер чеков, ₽</th><th>Чеков</th><th>Прибыль, USDT</th><th>Цена для цели (за всю сумму)</th>
+</tr></thead><tbody></tbody></table></div>
+</div>
+
+<details class="card">
+<summary>Настройки: тарифы и курс ABCEX</summary>
+<div class="pad">
+<div class="tar">
+<div><label for="t1">Тариф от 3 000 ₽, %</label><input id="t1" type="number" step="0.1" inputmode="decimal" value="9.2"></div>
+<div><label for="t2">Тариф от 5 000 ₽, %</label><input id="t2" type="number" step="0.1" inputmode="decimal" value="8.2"></div>
+<div><label for="t3">Тариф от 10 000 ₽, %</label><input id="t3" type="number" step="0.1" inputmode="decimal" value="5.8"></div>
+</div>
+<div class="note">Если знаете только ABCEX: <input id="abc" type="number" step="0.01" inputmode="decimal" placeholder="курс ABCEX" style="width:150px;font-size:14px;padding:7px 10px;margin:0 4px"> → курс площадки <b id="abcRes">—</b> (ABCEX × 1,08)<button class="btn" id="abcBtn" type="button">Подставить в «Покупку»</button></div>
+</div>
+</details>
+</div>
+
+<script>
+var $=function(i){return document.getElementById(i)};
+var BANDS=[[3000,4999],[5000,9999],[10000,29999]];
+var NP=7;
+var FIELDS=["P","price","target","t1","t2","t3","total","own"];
+for(var q=0;q<NP;q++)FIELDS.push("m"+q);
+function num(i){var v=parseFloat(String($(i).value).replace(",","."));return isNaN(v)?null:v}
+function tariff(a){var t1=num("t1"),t2=num("t2"),t3=num("t3");if(a>=10000)return t3/100;if(a>=5000)return t2/100;if(a>=3000)return t1/100;return null}
+function f(x,d){return x.toLocaleString("ru-RU",{minimumFractionDigits:d,maximumFractionDigits:d})}
+function sg(x){return (x>0?"+":x<0?"−":"")+f(Math.abs(x),2)}
+function pill(a,b){var c=(a>=0&&b>=0)?"pos":"neg";return '<span class="p '+c+'">'+sg(a)+" – "+sg(b)+"</span>"}
+function pill1(a){return '<span class="p '+(a>=0?"pos":"neg")+'">'+sg(a)+"</span>"}
+function tp(S,c,target){return f(Math.floor(S/(target+c)*100)/100,2)}
+function srow(name,cnt,pr,tpr){return "<tr><td>"+name+"</td><td>"+cnt+"</td><td>"+pr+"</td><td>"+tpr+"</td></tr>"}
+function calc(){
+  var P=num("P"),price=num("price"),target=num("target");
+  var abc=num("abc");$("abcRes").textContent=abc?f(abc*1.08,4):"—";
+  var b1=document.querySelector("#t tbody"),b2=document.querySelector("#m tbody"),b3=document.querySelector("#s tbody");
+  if(!P||P<=0){b1.innerHTML="";b2.innerHTML="";b3.innerHTML="";return}
+  var h="",m="";
+  BANDS.forEach(function(b){
+    var lo=b[0],hi=b[1],kk=(1-tariff(lo))/P,name=f(lo,0)+" – "+f(hi,0);
+    h+="<tr><td>"+name+"</td><td>"+f(lo*kk,2)+" – "+f(hi*kk,2)+"</td><td>"+(price?f(lo/price,2)+" – "+f(hi/price,2):"—")+"</td><td>"+(price?pill(lo/price-lo*kk,hi/price-hi*kk):"—")+"</td><td>"+(target!==null?tp(lo,lo*kk,target)+" – "+tp(hi,hi*kk,target):"—")+"</td></tr>";
+    m+="<tr><td>"+name+"</td>";
+    for(var j=0;j<NP;j++){var p=num("m"+j);m+='<td'+(p&&price&&p===price?' class="sel"':"")+">"+(p?pill(lo/p-lo*kk,hi/p-hi*kk):"—")+"</td>"}
+    m+="</tr>";
+  });
+  b1.innerHTML=h;b2.innerHTML=m;
+  for(var z=0;z<NP;z++){var pz=num("m"+z);$("m"+z).classList.toggle("sel",!!(pz&&price&&pz===price))}
+  var total=num("total"),s="";
+  if(total&&total>=3000){
+    BANDS.forEach(function(b){
+      var lo=b[0],hi=b[1],nmin=Math.ceil(total/hi),nmax=Math.floor(total/lo);
+      if(nmin>nmax)return;
+      var c=total*(1-tariff(lo))/P;
+      s+=srow(f(lo,0)+" – "+f(hi,0),nmin===nmax?String(nmin):nmin+" – "+nmax,price?pill1(total/price-c):"—",target!==null?tp(total,c,target):"—");
+    });
+  }
+  var own=String($("own").value).split(/[\s,;]+/).map(Number).filter(function(x){return x>=3000});
+  if(own.length){
+    var tot=own.reduce(function(a,x){return a+x},0),c2=own.reduce(function(a,x){return a+x*(1-tariff(x))/P},0);
+    s+=srow("Свои: "+own.map(function(x){return f(x,0)}).join(" + "),own.length,price?pill1(tot/price-c2):"—",target!==null?tp(tot,c2,target):"—");
+  }
+  b3.innerHTML=s||'<tr><td colspan="4" class="note">Введите сумму от 3 000 ₽</td></tr>';
+  save();
+}
+function save(){try{var o={};FIELDS.forEach(function(i){o[i]=$(i).value});localStorage.setItem("calcv2",JSON.stringify(o))}catch(e){}}
+function load(){try{var o=JSON.parse(localStorage.getItem("calcv2")||"null");if(o)FIELDS.forEach(function(i){if(o[i]!==undefined)$(i).value=o[i]})}catch(e){}}
+load();
+FIELDS.concat(["abc"]).forEach(function(i){$(i).addEventListener("input",calc)});
+$("abcBtn").addEventListener("click",function(){var a=num("abc");if(a){$("P").value=(a*1.08).toFixed(4);calc()}});
+calc();
+</script>
+</body>
+</html>
