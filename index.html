@@ -35,6 +35,13 @@ input::placeholder{color:var(--mut);font-weight:400}
 .p{display:inline-block;font-weight:500;border-radius:5px;padding:1px 6px;font-size:12.5px}
 .pos{color:var(--ok);background:var(--okbg)}.neg{color:var(--bad);background:var(--badbg)}
 .note{font-size:13px;color:var(--mut);line-height:1.6}
+.off input{width:84px;font-size:14px;padding:6px 8px;text-align:right;border-radius:8px}
+h3{font-size:13px;font-weight:600;margin:18px 0 8px;color:var(--tx)}
+h3:first-of-type{margin-top:6px}
+.pr{font-weight:700;color:var(--ac);font-size:15px}
+.rec{display:flex;justify-content:space-between;align-items:baseline;gap:6px 14px;flex-wrap:wrap;padding:11px 0;border-bottom:1px solid var(--bd);font-size:14px}
+.rec:last-child{border-bottom:none}
+.rec b{color:var(--ac);font-weight:700}
 .btn{font:inherit;font-size:13px;font-weight:600;color:#06121f;background:var(--ac);border:0;border-radius:8px;padding:8px 12px;cursor:pointer;margin-left:8px}
 .btn:hover{filter:brightness(1.1)}
 details.card{padding:0}
@@ -91,39 +98,65 @@ details[open] summary::after{transform:rotate(225deg)}
 </tr></thead><tbody></tbody></table></div>
 </div>
 
-<details class="card">
-<summary>Настройки: тарифы и курс ABCEX</summary>
-<div class="pad">
-<div class="tar">
-<div><label for="t1">Тариф от 3 000 ₽, %</label><input id="t1" type="number" step="0.1" inputmode="decimal" value="9.2"></div>
-<div><label for="t2">Тариф от 5 000 ₽, %</label><input id="t2" type="number" step="0.1" inputmode="decimal" value="8.2"></div>
-<div><label for="t3">Тариф от 10 000 ₽, %</label><input id="t3" type="number" step="0.1" inputmode="decimal" value="5.8"></div>
+<div class="card">
+<h2>Предложения клиентам</h2>
+<h3>Предложение А: чеки по 5 000 ₽</h3>
+<div class="scroll"><table class="tbl off"><thead><tr><th>Клиент</th><th>Объём от, ₽</th><th>Цель, USDT</th><th>Чеков</th><th>Цена клиенту</th><th>Ваша прибыль</th></tr></thead><tbody>
+<tr><td>Постоянный</td><td><input id="a_v0" type="number" step="1000" inputmode="numeric" value="60000"></td><td><input id="a_g0" type="number" step="0.5" inputmode="decimal" value="10"></td><td id="a_n0"></td><td id="a_p0"></td><td id="a_r0"></td></tr>
+<tr><td>Остальные</td><td><input id="a_v1" type="number" step="1000" inputmode="numeric" value="60000"></td><td><input id="a_g1" type="number" step="0.5" inputmode="decimal" value="15"></td><td id="a_n1"></td><td id="a_p1"></td><td id="a_r1"></td></tr>
+</tbody></table></div>
+<h3>Предложение Б: чеки по 10 000 ₽</h3>
+<div class="scroll"><table class="tbl off"><thead><tr><th>Клиент</th><th>Объём от, ₽</th><th>Цель, USDT</th><th>Чеков</th><th>Цена клиенту</th><th>Ваша прибыль</th></tr></thead><tbody>
+<tr><td>Постоянный</td><td><input id="b_v0" type="number" step="1000" inputmode="numeric" value="100000"></td><td><input id="b_g0" type="number" step="0.5" inputmode="decimal" value="10"></td><td id="b_n0"></td><td id="b_p0"></td><td id="b_r0"></td></tr>
+<tr><td>Остальные</td><td><input id="b_v1" type="number" step="1000" inputmode="numeric" value="100000"></td><td><input id="b_g1" type="number" step="0.5" inputmode="decimal" value="16"></td><td id="b_n1"></td><td id="b_p1"></td><td id="b_r1"></td></tr>
+</tbody></table></div>
 </div>
-<div class="note">Если знаете только ABCEX: <input id="abc" type="number" step="0.01" inputmode="decimal" placeholder="курс ABCEX" style="width:150px;font-size:14px;padding:7px 10px;margin:0 4px"> → курс площадки <b id="abcRes">—</b> (ABCEX × 1,08)<button class="btn" id="abcBtn" type="button">Подставить в «Покупку»</button></div>
+
+<div class="card">
+<h2>Рекомендации</h2>
+<h3>Постоянные клиенты</h3>
+<div class="rec"><span>Чеки по 5 000 ₽</span><span id="rec0"></span></div>
+<div class="rec"><span>Чеки по 10 000 ₽</span><span id="rec1"></span></div>
+<h3>Обычные клиенты (чеки от 10 000 ₽)</h3>
+<div class="rec"><span>Чеки по 10 000 ₽</span><span id="rec2"></span></div>
 </div>
-</details>
 </div>
 
 <script>
 var $=function(i){return document.getElementById(i)};
 var BANDS=[[3000,4999],[5000,9999],[10000,29999]];
 var NP=7;
-var FIELDS=["P","price","target","t1","t2","t3","total","own"];
+var FIELDS=["P","price","target","total","own","a_v0","a_g0","a_v1","a_g1","b_v0","b_g0","b_v1","b_g1"];
 for(var q=0;q<NP;q++)FIELDS.push("m"+q);
 function num(i){var v=parseFloat(String($(i).value).replace(",","."));return isNaN(v)?null:v}
-function tariff(a){var t1=num("t1"),t2=num("t2"),t3=num("t3");if(a>=10000)return t3/100;if(a>=5000)return t2/100;if(a>=3000)return t1/100;return null}
+var TAR={t1:0.092,t2:0.082,t3:0.058};
+function tariff(a){if(a>=10000)return TAR.t3;if(a>=5000)return TAR.t2;if(a>=3000)return TAR.t1;return null}
 function f(x,d){return x.toLocaleString("ru-RU",{minimumFractionDigits:d,maximumFractionDigits:d})}
 function sg(x){return (x>0?"+":x<0?"−":"")+f(Math.abs(x),2)}
 function pill(a,b){var c=(a>=0&&b>=0)?"pos":"neg";return '<span class="p '+c+'">'+sg(a)+" – "+sg(b)+"</span>"}
 function pill1(a){return '<span class="p '+(a>=0?"pos":"neg")+'">'+sg(a)+"</span>"}
 function tp(S,c,target){return f(Math.floor(S/(target+c)*100)/100,2)}
 function srow(name,cnt,pr,tpr){return "<tr><td>"+name+"</td><td>"+cnt+"</td><td>"+pr+"</td><td>"+tpr+"</td></tr>"}
+function offerCalc(id,s,P){
+  var chk=id==="a"?5000:10000,t=tariff(chk),V=num(id+"_v"+s),G=num(id+"_g"+s);
+  if(!V||V<=0||G===null)return null;
+  var p=Math.floor(1/(G/V+(1-t)/P)*10)/10;
+  return {V:V,p:p,profit:V/p-V*(1-t)/P,n:Math.ceil(V/chk)};
+}
+function offers(P){
+  ["a","b"].forEach(function(id){for(var s=0;s<2;s++){
+    var X=["n","p","r"].map(function(x){return $(id+"_"+x+s)}),o=offerCalc(id,s,P);
+    if(!o){X.forEach(function(e){e.textContent="—"});continue}
+    X[0].textContent=o.n;X[1].innerHTML='<span class="pr">'+f(o.p,1)+"</span>";X[2].innerHTML=pill1(o.profit);
+  }});
+  var R=function(id,s){var o=offerCalc(id,s,P);return o?"оборот от <b>"+f(o.V,0)+" ₽</b> по курсу <b>"+f(o.p,1)+"</b> (прибыль ≈ "+f(o.profit,1)+" USDT)":"—"};
+  $("rec0").innerHTML=R("a",0);$("rec1").innerHTML=R("b",0);$("rec2").innerHTML=R("b",1);
+}
 function calc(){
   var P=num("P"),price=num("price"),target=num("target");
-  var abc=num("abc");$("abcRes").textContent=abc?f(abc*1.08,4):"—";
   var b1=document.querySelector("#t tbody"),b2=document.querySelector("#m tbody"),b3=document.querySelector("#s tbody");
   if(!P||P<=0){b1.innerHTML="";b2.innerHTML="";b3.innerHTML="";return}
-  var h="",m="";
+  offers(P);var h="",m="";
   BANDS.forEach(function(b){
     var lo=b[0],hi=b[1],kk=(1-tariff(lo))/P,name=f(lo,0)+" – "+f(hi,0);
     h+="<tr><td>"+name+"</td><td>"+f(lo*kk,2)+" – "+f(hi*kk,2)+"</td><td>"+(price?f(lo/price,2)+" – "+f(hi/price,2):"—")+"</td><td>"+(price?pill(lo/price-lo*kk,hi/price-hi*kk):"—")+"</td><td>"+(target!==null?tp(lo,lo*kk,target)+" – "+tp(hi,hi*kk,target):"—")+"</td></tr>";
@@ -153,8 +186,7 @@ function calc(){
 function save(){try{var o={};FIELDS.forEach(function(i){o[i]=$(i).value});localStorage.setItem("calcv2",JSON.stringify(o))}catch(e){}}
 function load(){try{var o=JSON.parse(localStorage.getItem("calcv2")||"null");if(o)FIELDS.forEach(function(i){if(o[i]!==undefined)$(i).value=o[i]})}catch(e){}}
 load();
-FIELDS.concat(["abc"]).forEach(function(i){$(i).addEventListener("input",calc)});
-$("abcBtn").addEventListener("click",function(){var a=num("abc");if(a){$("P").value=(a*1.08).toFixed(4);calc()}});
+FIELDS.forEach(function(i){$(i).addEventListener("input",calc)});
 calc();
 </script>
 </body>
